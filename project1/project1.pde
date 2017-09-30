@@ -22,6 +22,27 @@ int[] predictedTestType, testType, trainingType;
 int testCount = 0;
 int trainingCount = 0;
 
+void readInput() {
+
+  rowCount = dataset.getRowCount();
+  labelInput = new int[rowCount];
+  labelString = new String[rowCount];
+  widthInput = new float[rowCount];
+  heightInput = new float[rowCount];
+
+  for (int row = 1; row < rowCount; row++) {
+    labelInput[row] = dataset.getInt(row, 0);
+    labelString[row] = dataset.getString(row, 1);
+
+    widthInput[row] = dataset.getFloat(row, 4);
+    heightInput[row] = dataset.getFloat(row, 5);
+  }
+
+  for ( int row =0; row < rowCount; row++ ) {
+    print( "(" + widthInput[row] + " , " + heightInput[row] + ") " );
+  }
+}
+
 void identifyValues() {
   int modulusCount = 0;
 
@@ -43,9 +64,9 @@ void identifyValues() {
   widthTest = new float[testCount];
   heightTest = new float[testCount];
   for (int rowTest = 0; rowTest < testCount; rowTest++) {
-      widthTest[rowTest] = widthInput[rowTest * 4 + 4]; //<>//
-      heightTest[rowTest] = heightInput[rowTest * 4 + 4];
-      testType[rowTest] = labelInput[rowTest * 4 + 4];
+      widthTest[rowTest] = widthInput[rowTest * 4 + 3]; //<>//
+      heightTest[rowTest] = heightInput[rowTest * 4 + 3];
+      testType[rowTest] = labelInput[rowTest * 4 + 3];
   }
 
   // Assigning training data
@@ -95,6 +116,14 @@ void predictTestType() {
 float testAccuracy() {
   int correctPrediction = 0;
   int incorrectPrediction = 0;
+  
+  String[] fruitType = new String[5];
+  fruitType[0] = "unknown";
+  fruitType[1] = "apple";
+  fruitType[2] = "mandarin";
+  fruitType[3] = "orange";
+  fruitType[4] = "lemon";
+  
   // Gather all test data whose type is the correct type
   println();
   for (int rowTest = 0; rowTest < testCount; rowTest++) {
@@ -104,35 +133,15 @@ float testAccuracy() {
     }
     else {
       incorrectPrediction++;
-      println("Fruit " + (rowTest * 4 + 3) + " prediction of " + predictedTestType[rowTest] + " is incorrect. The type is " + testType[rowTest] + "," + labelString[rowTest * 4 + 3]);
+      println("Fruit " + (rowTest * 4 + 3) + " prediction of " + fruitType[predictedTestType[rowTest]] + " is incorrect. The type is " + labelString[rowTest * 4 + 3]);
     }
   }
+  
   // Return result
   println("Correct guesses: " + correctPrediction);
   println("Incorrect guesses: " + incorrectPrediction);
-  print("\nThe accuracy is ");
+  print("\nThe accuracy/microaverage is ");
   return (float)correctPrediction / (float)(correctPrediction + incorrectPrediction);
-}
-
-void readInput() {
-
-  rowCount = dataset.getRowCount();
-  labelInput = new int[rowCount];
-  labelString = new String[rowCount];
-  widthInput = new float[rowCount];
-  heightInput = new float[rowCount];
-
-  for (int row = 1; row < rowCount; row++) {
-    labelInput[row] = dataset.getInt(row, 0);
-    labelString[row] = dataset.getString(row, 1);
-
-    widthInput[row] = dataset.getFloat(row, 4);
-    heightInput[row] = dataset.getFloat(row, 5);
-  }
-
-  for ( int row =0; row < rowCount; row++ ) {
-    print( "(" + widthInput[row] + " , " + heightInput[row] + ") " );
-  }
 }
 
 void setup() {
@@ -143,7 +152,6 @@ void setup() {
   identifyValues();
   predictTestType();
   println(testAccuracy() * 100 + " %");
-
   /* Show all the test points as circles */
 }
 
@@ -182,7 +190,7 @@ void drawTrainingData() {
         fill(colorValues[2]);
       }
     }
-    ellipse(widthInput[row] * 100, heightInput[row] * 100, 10, 10);
+    ellipse(widthInput[row] * 50, heightInput[row] * 50, 5, 5);
   }
 }
 
